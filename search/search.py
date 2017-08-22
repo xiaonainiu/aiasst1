@@ -81,13 +81,63 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from game import Directions
+    dfsstack = util.Stack()
+    visited = [problem.getStartState() ]
+    res,_,_ = dfs_helper(problem, problem.getStartState(), visited, dfsstack)
+    print res.list
+    path = []
+    while not res.isEmpty():
+        dir = res.pop()
+        s = Directions.SOUTH
+        w = Directions.WEST
+        e = Directions.EAST
+        n = Directions.NORTH
+        if dir == "South":
+            path.insert(0, s)
+        elif dir == "North":
+            path.insert(0, n)
+        elif dir == "East":
+            path.insert(0, e)
+        else:
+            path.insert(0, w)
+    return path
+
+
+    #print "Start:", problem.getStartState()
+    #print "Is the start a goal?", problem.isGoalState(problem.getStartState())
+    #print "Start's successors:", problem.getSuccessors(problem.getStartState())
+    #[1][0]
+    #print "1st successor is a goal?", problem.isGoalState(problem.getSuccessors(problem.getStartState())[1][0])
+    #print "1st successor's successors:", problem.getSuccessors(problem.getSuccessors(problem.getStartState())[1][0])
+
+
+    #"*** YOUR CODE HERE ***"
+    #util.raiseNotDefined()
+
+def dfs_helper(problem, state, visited, dfsstack, success = False):
+    if (problem.isGoalState(state)):
+        success = True
+        return (dfsstack, visited, success)
+    else:
+        for pos in problem.getSuccessors( state ):
+            if pos[0] not in visited:
+                visited.append( pos[0] )
+                dfsstack.push(pos[1])
+                #print dfsstack.list
+                tmp_dfsstack, visited, tmp_success = dfs_helper(problem, pos[0], visited, dfsstack)
+                if(tmp_success):
+                    return (tmp_dfsstack, visited, tmp_success)
+                else:
+                    dfsstack.pop()
+            else:
+                continue
+        return (dfsstack, visited, success)
+
+
+
+
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
