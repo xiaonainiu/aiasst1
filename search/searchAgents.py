@@ -387,7 +387,8 @@ def cornersHeuristic(state, problem):
 
     if len(hvalue_list) == 0:
         return 0
-    hvalue = (sum(hvalue_list) / 4.0)
+    # hvalue = (sum(hvalue_list) / 4.0)
+    hvalue = max(hvalue_list)
 
     return hvalue
     # "*** YOUR CODE HERE ***"
@@ -484,8 +485,16 @@ def foodHeuristic(state, problem):
     problem.heuristicInfo['wallCount']
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    hvalue_list = [0]
+    food_list = foodGrid.asList()
+    # print  "foodlist", food_list
+    for food in food_list:
+        hvalue_list.append(mazeDistance(position,food,problem.startingGameState))
+
+    if len(hvalue_list) == 0:
+        return 0
+    hvalue = max(hvalue_list)
+    return hvalue
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -519,37 +528,9 @@ class ClosestDotSearchAgent(SearchAgent):
         #start here
         # print "isGoal:", problem.isGoalState(startPosition)
         return search.breadthFirstSearch(problem)
-        # from game import Directions
-        # s = Directions.SOUTH
-        # w = Directions.WEST
-        # e = Directions.EAST
-        # n = Directions.NORTH
-        # cdqueue = util.Queue()
-        # path = []
-        # visited = [startPosition]
-        # cdqueue.push((startPosition, path))
-        #
-        # while not cdqueue.isEmpty():
-        #
-        #     sequence, path = cdqueue.pop()
-        #     state = sequence[-1]
-        #     if problem.isGoalState(state):
-        #         return path
-        #     for pos in problem.getSuccessors(state):
-        #         if pos[0] not in visited:
-        #             visited.append(pos[0])
-        #             sequence_tmp = list(sequence)
-        #             sequence_tmp.append(pos[0])
-        #             path_tmp = list(path)
-        #             path_tmp.append(pos[1])
-        #             cdqueue.push((sequence_tmp, path_tmp))
-        #         else:
-        #             continue
-        # return "error"
-        #end here
 
         # "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -603,7 +584,9 @@ def mazeDistance(point1, point2, gameState):
     """
     x1, y1 = point1
     x2, y2 = point2
+    #change from:
     walls = gameState.getWalls()
+    # walls = gameState.walls()
     assert not walls[x1][y1], 'point1 is a wall: ' + str(point1)
     assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
     prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False, visualize=False)
