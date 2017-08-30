@@ -82,27 +82,12 @@ def depthFirstSearch(problem):
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
     """
-    from game import Directions
-    # print "Start's successors:", problem.getSuccessors(problem.getStartState())
 
-    # print "state",  problem.getStartState().getFood()
     dfsstack = util.Stack()
     visited = [problem.getStartState() ]
     res,_,_ = dfs_helper(problem, problem.getStartState(), visited, dfsstack)
 
     return res.list
-
-
-    #print "Start:", problem.getStartState()
-    #print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    # print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    #[1][0]
-    #print "1st successor is a goal?", problem.isGoalState(problem.getSuccessors(problem.getStartState())[1][0])
-    #print "1st successor's successors:", problem.getSuccessors(problem.getSuccessors(problem.getStartState())[1][0])
-
-
-    #"*** YOUR CODE HERE ***"
-    #util.raiseNotDefined()
 
 def dfs_helper(problem, state, visited, dfsstack, success = False):
     if (problem.isGoalState(state)):
@@ -113,7 +98,6 @@ def dfs_helper(problem, state, visited, dfsstack, success = False):
             if pos[0] not in visited:
                 visited.append( pos[0] )
                 dfsstack.push(pos[1])
-                #print dfsstack.list
                 tmp_dfsstack, visited, tmp_success = dfs_helper(problem, pos[0], visited, dfsstack)
                 if(tmp_success):
                     return (tmp_dfsstack, visited, tmp_success)
@@ -123,76 +107,51 @@ def dfs_helper(problem, state, visited, dfsstack, success = False):
                 continue
         return (dfsstack, visited, success)
 
-
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    # "*** test start ***"
-
-    # print problem.getSuccessors((6,6))
-    # print problem.getSuccessors((6,1))
-
-    # "*** test end ***"
-    from game import Directions
-    s = Directions.SOUTH
-    w = Directions.WEST
-    e = Directions.EAST
-    n = Directions.NORTH
     bfsqueue = util.Queue()
     path = []
     visited = [problem.getStartState()]
-    bfsqueue.push( ( [problem.getStartState()], path ) )
+    bfsqueue.push( ( problem.getStartState(), path ) )
 
     while not bfsqueue.isEmpty():
 
-        sequence, path = bfsqueue.pop()
-        state = sequence[-1]
-        if problem.isGoalState(state):
+        node, path = bfsqueue.pop()
+        if problem.isGoalState(node):
             return path
-        for pos in problem.getSuccessors(state):
+        for pos in problem.getSuccessors(node):
             if pos[0] not in visited:
                 visited.append(pos[0])
-                sequence_tmp = list( sequence )
-                sequence_tmp.append(pos[0])
                 path_tmp = list( path )
                 path_tmp.append(pos[1])
-                bfsqueue.push( ( sequence_tmp, path_tmp ))
+                bfsqueue.push( ( pos[0], path_tmp ))
             else:
                 continue
     return "error"
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
-    from game import Directions
-    s = Directions.SOUTH
-    w = Directions.WEST
-    e = Directions.EAST
-    n = Directions.NORTH
     ucspriorityqueue = util.PriorityQueue()
     path = []
     visited = [problem.getStartState()]
     best_cost = [0]
-    ucspriorityqueue.push( ([problem.getStartState()], path) ,  problem.getCostOfActions(path))
+    ucspriorityqueue.push( (problem.getStartState(), path) ,  problem.getCostOfActions(path))
 
     while not ucspriorityqueue.isEmpty():
-        sequence, path = ucspriorityqueue.pop()
-        state = sequence[-1]
-        if problem.isGoalState(state):
-            #print path
-            #print problem.getCostOfActions(path)
+        node, path = ucspriorityqueue.pop()
+        if problem.isGoalState(node):
             return path
-        for pos in problem.getSuccessors(state):
-            sequence_tmp = list(sequence)
-            sequence_tmp.append(pos[0])
+        for pos in problem.getSuccessors(node):
             path_tmp = list(path)
             path_tmp.append(pos[1])
             if pos[0] not in visited:
                 visited.append(pos[0])
-                ucspriorityqueue.push((sequence_tmp, path_tmp), problem.getCostOfActions(path_tmp))
+                ucspriorityqueue.push((pos[0], path_tmp), problem.getCostOfActions(path_tmp))
                 best_cost.append( problem.getCostOfActions(path_tmp) )
             else:
                 idx = visited.index( pos[0] )
                 if best_cost[idx] > problem.getCostOfActions(path_tmp):
-                    ucspriorityqueue.push((sequence_tmp, path_tmp), problem.getCostOfActions(path_tmp))
+                    ucspriorityqueue.push((pos[0], path_tmp), problem.getCostOfActions(path_tmp))
                     best_cost[idx] = problem.getCostOfActions(path_tmp)
     return "error"
 
@@ -206,44 +165,30 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    # print problem.goals
-    # from searchAgents import manhattanHeuristic
-    print "food state"+ str(problem.getStartState())
-    from game import Directions
-    s = Directions.SOUTH
-    w = Directions.WEST
-    e = Directions.EAST
-    n = Directions.NORTH
     astarpriorityqueue = util.PriorityQueue()
     path = []
     astar_closed_list = [problem.getStartState()]
     best_cost = [ problem.getCostOfActions(path) +  heuristic(problem.getStartState(), problem) ]
-    astarpriorityqueue.push(([problem.getStartState()], path), problem.getCostOfActions(path) +  heuristic(problem.getStartState(), problem) )
+    astarpriorityqueue.push((problem.getStartState(), path), problem.getCostOfActions(path) +  heuristic(problem.getStartState(), problem) )
 
     while not astarpriorityqueue.isEmpty():
-        sequence, path = astarpriorityqueue.pop()
-        state = sequence[-1]
-        if problem.isGoalState(state):
+        node, path = astarpriorityqueue.pop()
+
+        if problem.isGoalState(node):
             return path
-        for pos in problem.getSuccessors(state):
-            #print "h(s'): " + str( heuristic(state, problem) )
-            #print "h(s): " + str( heuristic(pos[0], problem) )
-            #print "cost: " + str(pos[2])
-            sequence_tmp = list(sequence)
-            sequence_tmp.append(pos[0])
+        for pos in problem.getSuccessors(node):
             path_tmp = list(path)
             path_tmp.append(pos[1])
             if pos[0] not in astar_closed_list:
                 astar_closed_list.append(pos[0])
-                astarpriorityqueue.push((sequence_tmp, path_tmp), problem.getCostOfActions(path_tmp) + heuristic(pos[0], problem) )
+                astarpriorityqueue.push((pos[0], path_tmp), problem.getCostOfActions(path_tmp) + heuristic(pos[0], problem) )
                 best_cost.append(problem.getCostOfActions(path_tmp)  + heuristic(pos[0], problem) )
             else:
                 idx = astar_closed_list.index(pos[0])
-                if best_cost[idx] > problem.getCostOfActions(path_tmp) + heuristic(state, problem):
-                    astarpriorityqueue.push((sequence_tmp, path_tmp), problem.getCostOfActions(path_tmp) + heuristic(pos[0], problem) )
+                if best_cost[idx] > problem.getCostOfActions(path_tmp) + heuristic(pos[0], problem):
+                    astarpriorityqueue.push((pos[0], path_tmp), problem.getCostOfActions(path_tmp) + heuristic(pos[0], problem) )
                     best_cost[idx] = problem.getCostOfActions(path_tmp) + heuristic(pos[0], problem)
     return "error"
-
 
 # Abbreviations
 bfs = breadthFirstSearch

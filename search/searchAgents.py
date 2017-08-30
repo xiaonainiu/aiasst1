@@ -286,8 +286,6 @@ class CornersProblem(search.SearchProblem):
                 print 'Warning: no food in corner ' + str(corner)
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
-        # in initializing the problem
-        "*** YOUR CODE HERE ***"
 
     def getStartState(self):
         """
@@ -303,9 +301,6 @@ class CornersProblem(search.SearchProblem):
         """
 
         return (state[1][0] and state[1][1] and state[1][2] and state[1][3])
-
-        # "*** YOUR CODE HERE ***"
-        # util.raiseNotDefined()
 
     def getSuccessors(self, state):
         """
@@ -374,20 +369,13 @@ def cornersHeuristic(state, problem):
     xy1 = state[0]
     goal = state[1]
     hvalue_list = []
-    # print "corners",corners
     if state[1][0] and state[1][1] and state[1][2] and state[1][3]:
         return 0
     for i in range (0,4):
         if not goal[i]:
             hvalue_list.append( util.manhattanDistance(xy1, problem.corners[i]) )
-    # print "h_value",hvalue_list
-
-    # hvalue = (sum(hvalue_list) / 4.0)
     hvalue = max(hvalue_list)
-    # print "max_value:",hvalue
     return hvalue
-    # "*** YOUR CODE HERE ***"
-    # return 0 # Default to trivial solution
 
 
 
@@ -485,7 +473,6 @@ def foodHeuristic(state, problem):
     position, foodGrid = state
     hvalue_list = [0]
     food_list = foodGrid.asList()
-    # print  "foodlist", food_list
     for food in food_list:
         hvalue_list.append(mazeDistance(position,food,problem.startingGameState))
 
@@ -522,13 +509,7 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        # print "state\n", walls[0],"\n",walls[1],"\n",walls[2]
-        #start here
-        # print "isGoal:", problem.isGoalState(startPosition)
         return search.breadthFirstSearch(problem)
-
-        # "*** YOUR CODE HERE ***"
-
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -567,9 +548,6 @@ class AnyFoodSearchProblem(PositionSearchProblem):
 
         return isGoal
 
-        # "*** YOUR CODE HERE ***"
-        # util.raiseNotDefined()
-
 def mazeDistance(point1, point2, gameState):
     """
     Returns the maze distance between any two points, using the search functions
@@ -582,9 +560,7 @@ def mazeDistance(point1, point2, gameState):
     """
     x1, y1 = point1
     x2, y2 = point2
-    #change from:
     walls = gameState.getWalls()
-    # walls = gameState.walls()
     assert not walls[x1][y1], 'point1 is a wall: ' + str(point1)
     assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
     prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False, visualize=False)
